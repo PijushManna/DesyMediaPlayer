@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Android/DesyMediaPlayer/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Android/DesyMediaPlayer/app/src/main/res/layout/activity_player.xml" value="0.1" />
+        <entry key="..\:/Android/DesyMediaPlayer/app/src/main/res/layout/exo_player_control_view.xml" value="0.16" />
       </map>
     </option>
   </component>

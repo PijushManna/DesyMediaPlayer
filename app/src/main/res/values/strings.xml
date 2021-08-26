@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DesyMediaPlayer</string>
+    <string name="playback_fffwd" />
 </resources>
