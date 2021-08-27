@@ -1,10 +1,15 @@
 package com.blogspot.desymediaplayer
 
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,12 +18,17 @@ import com.blogspot.desymediaplayer.utils.DoubleClickListener
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.util.Util
+import android.view.animation.TranslateAnimation
+
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 
 
 private const val TAG = "ActivityPlayer"
 private const val CURRENT_PLAYBACK_POSITION = "CurrentIndex"
 private const val PLAYBACK_WINDOW_INDEX = "windowIndex"
 private const val PLAY_IF_READY = "playWhenReady"
+private const val MEDIA_URI = "https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -35,13 +45,23 @@ class PlayerActivity : AppCompatActivity() {
     private val changeAudioButton: ImageButton by lazy {
         findViewById(R.id.ib_change_audio)
     }
+    private val pbrBuffering: ProgressBar by lazy {
+        findViewById(R.id.pbr_buffering)
+    }
     private val subtitleTracks = ArrayList<String>()
     private val changeSubtitleButton:ImageButton by lazy {
         findViewById(R.id.ib_change_subtitle)
     }
+    private val ffSeek:ImageButton by lazy{
+        findViewById(R.id.exo_ffwd)
+    }
+    private val exoRew:ImageButton by lazy{
+        findViewById(R.id.exo_rew)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        useFullscreenUi()
         setContentView(viewBinding.root)
         val right: ImageButton = findViewById(R.id.ib_seek_right)
         val left: ImageButton = findViewById(R.id.ib_seek_left)
@@ -84,7 +104,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
                 val cs: Array<CharSequence> = subtitleTracks.toArray(arrayOfNulls<CharSequence>(subtitleTracks.size))
                 setItems(cs) { _, i ->
-                    Toast.makeText(baseContext, "Subtitle changed to ${subtitleTracks[i]}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(baseContext, "Subtitles changed to ${subtitleTracks[i]}", Toast.LENGTH_SHORT).show()
                     setSubtitleTrack(i)
                 }
             }
@@ -92,18 +112,33 @@ class PlayerActivity : AppCompatActivity() {
             val alertDialog: AlertDialog = builder.create()
             alertDialog.show()
         }
+
     }
 
     private fun seekRight() {
-        player?.seekForward()
+        if (currentPlaybackPosition+5000 < player!!.duration) {
+            currentPlaybackPosition += 5000
+            player?.seekTo(currentPlaybackPosition)
+        }
+
+        val animation: Animation = TranslateAnimation(0F, 300F, 0F, 0F)
+        animation.duration = 500
+        ffSeek.startAnimation(animation)
     }
 
     private fun seekLeft() {
-        player?.seekBack()
+        if (currentPlaybackPosition-5000 >= 0) {
+            currentPlaybackPosition -= 5000
+            player?.seekTo(currentPlaybackPosition)
+        }
+        val animation: Animation = TranslateAnimation(0F, -300F, 0F, 0F)
+        animation.duration = 500
+        exoRew.startAnimation(animation)
     }
 
     override fun onStart() {
         super.onStart()
+
         if (Util.SDK_INT >= 24) {
             initializePlayer()
         }
@@ -129,10 +164,10 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
         outState.putInt(PLAYBACK_WINDOW_INDEX, playerWindowIndex)
         outState.putLong(CURRENT_PLAYBACK_POSITION, currentPlaybackPosition)
         outState.putBoolean(PLAY_IF_READY, playWhenReady)
+        super.onSaveInstanceState(outState, outPersistentState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -140,6 +175,25 @@ class PlayerActivity : AppCompatActivity() {
         playerWindowIndex = savedInstanceState.getInt(PLAYBACK_WINDOW_INDEX)
         currentPlaybackPosition = savedInstanceState.getLong(CURRENT_PLAYBACK_POSITION)
         playWhenReady = savedInstanceState.getBoolean(PLAY_IF_READY)
+    }
+
+    private fun useFullscreenUi(){
+        requestWindowFeature(Window.FEATURE_NO_TITLE) //will hide the title
+
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        ) //show the activity in full screen
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        }
     }
 
     private fun initializePlayer() {
@@ -150,7 +204,7 @@ class PlayerActivity : AppCompatActivity() {
             .also { exoPlayer ->
                 viewBinding.videoView.player = exoPlayer
                 val mediaItem =
-                    MediaItem.fromUri("https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8")
+                    MediaItem.fromUri(MEDIA_URI)
                 exoPlayer.setMediaItem(mediaItem)
                 exoPlayer.playWhenReady = playWhenReady
                 exoPlayer.seekTo(playerWindowIndex, currentPlaybackPosition)
@@ -188,13 +242,13 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         private fun buffering() {
-            viewBinding.pbrBuffering.visibility = View.VISIBLE
+            pbrBuffering.visibility = View.VISIBLE
             pauseButton.setImageResource(0)
             playButton.setImageResource(0)
         }
 
         private fun ready() {
-            viewBinding.pbrBuffering.visibility = View.INVISIBLE
+            pbrBuffering.visibility = View.INVISIBLE
             pauseButton.setImageResource(R.drawable.exo_ic_pause_circle_filled)
             playButton.setImageResource(R.drawable.exo_ic_play_circle_filled)
             if(audioTracks.size == 0){
@@ -257,5 +311,6 @@ class PlayerActivity : AppCompatActivity() {
                 .setPreferredTextLanguage(subtitleTracks[i])
         )
     }
+
 }
 

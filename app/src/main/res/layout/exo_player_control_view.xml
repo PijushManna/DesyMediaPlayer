@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:padding="4dp">
 
+    <ProgressBar
+        android:id="@+id/pbr_buffering"
+        style="@android:style/Widget.Holo.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/video_view"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_conversion_absoluteHeight="48dp"
+        tools:layout_conversion_absoluteWidth="48dp" />
+
     <ImageButton
         android:id="@+id/ib_seek_left"
         android:layout_width="150dp"
@@ -31,6 +45,21 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/ib_change_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/exo_controls_seek_bar_description"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/exo_ic_subtitle_off"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <ImageButton
             android:id="@+id/ib_change_audio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,24 +74,10 @@
             app:srcCompat="@drawable/exo_ic_audiotrack"
             tools:ignore="SpeakableTextPresentCheck,DuplicateClickableBoundsCheck" />
 
-        <ImageButton
-            android:id="@+id/ib_change_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="4dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/exo_controls_seek_bar_description"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/exo_ic_subtitle_off"
-            tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
