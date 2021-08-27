@@ -1,3 +1,3 @@
 # DesyMediaPlayer
 
-Please use the apk-release.apk file to install the apk. 
+Please use the app-release.apk file to install the apk. 
