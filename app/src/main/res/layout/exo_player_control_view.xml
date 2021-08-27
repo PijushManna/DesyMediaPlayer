@@ -3,10 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="4dp">
+
+    <ImageButton
+        android:id="@+id/ib_seek_left"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start|center_vertical"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/exo_controls_seek_bar_description"
+        tools:ignore="SpeakableTextPresentCheck,DuplicateSpeakableTextCheck" />
+
+    <ImageButton
+        android:id="@+id/ib_seek_right"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical|end"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/exo_controls_seek_bar_description"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
@@ -16,48 +35,37 @@
         <ImageButton
             android:id="@id/exo_rew"
             style="@style/ExoMediaButton.Rewind"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/exo_controls_rewind_description"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
+            android:scaleX="2"
+            android:scaleY="2"
             android:src="@drawable/exo_ic_rewind"
             android:visibility="invisible" />
 
         <ImageButton
-            android:id="@id/exo_shuffle"
-            style="@style/ExoMediaButton"
-            android:contentDescription="@string/exo_controls_shuffle_off_description"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-        <ImageButton
-            android:id="@id/exo_repeat_toggle"
-            style="@style/ExoMediaButton"
-            android:contentDescription="@string/exo_controls_repeat_all_description"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-        <ImageButton
             android:id="@id/exo_play"
             style="@style/ExoMediaButton.Play"
+            android:layout_margin="8dp"
             android:contentDescription="@string/exo_controls_play_description"
             android:src="@drawable/exo_ic_play_circle_filled" />
 
         <ImageButton
             android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause"
+            android:layout_margin="8dp"
             android:contentDescription="@string/exo_controls_pause_description"
             android:src="@drawable/exo_ic_pause_circle_filled" />
 
         <ImageButton
             android:id="@id/exo_ffwd"
             style="@style/ExoMediaButton.FastForward"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/exo_controls_fastforward_description"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
+            android:scaleX="2"
+            android:scaleY="2"
             android:src="@drawable/exo_ic_forward" />
-
-        <ImageButton
-            android:id="@id/exo_vr"
-            style="@style/ExoMediaButton.VR"
-            android:contentDescription="@string/exo_controls_vr_description" />
 
     </LinearLayout>
 
