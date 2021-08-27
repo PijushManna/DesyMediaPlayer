@@ -35,6 +35,10 @@ class PlayerActivity : AppCompatActivity() {
     private val changeAudioButton: ImageButton by lazy {
         findViewById(R.id.ib_change_audio)
     }
+    private val subtitleTracks = ArrayList<String>()
+    private val changeSubtitleButton:ImageButton by lazy {
+        findViewById(R.id.ib_change_subtitle)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,13 +61,31 @@ class PlayerActivity : AppCompatActivity() {
             builder.apply {
                 setNegativeButton(
                     "Cancel"
-                ) { dialog, id ->
+                ) { dialog, _ ->
                     dialog.dismiss()
                 }
                 val cs: Array<CharSequence> = audioTracks.toArray(arrayOfNulls<CharSequence>(audioTracks.size))
                 setItems(cs) { _, i ->
-                    Toast.makeText(baseContext, i.toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(baseContext, "Changed audio to ${audioTracks[i]}", Toast.LENGTH_SHORT).show()
                     setAudioTracks(i)
+                }
+            }
+            // Create the AlertDialog
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.show()
+        }
+        changeSubtitleButton.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.apply {
+                setNegativeButton(
+                    "Cancel"
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                val cs: Array<CharSequence> = subtitleTracks.toArray(arrayOfNulls<CharSequence>(subtitleTracks.size))
+                setItems(cs) { _, i ->
+                    Toast.makeText(baseContext, "Subtitle changed to ${subtitleTracks[i]}", Toast.LENGTH_SHORT).show()
+                    setSubtitleTrack(i)
                 }
             }
             // Create the AlertDialog
@@ -175,17 +197,18 @@ class PlayerActivity : AppCompatActivity() {
             viewBinding.pbrBuffering.visibility = View.INVISIBLE
             pauseButton.setImageResource(R.drawable.exo_ic_pause_circle_filled)
             playButton.setImageResource(R.drawable.exo_ic_play_circle_filled)
-            getAudioTrack()
+            if(audioTracks.size == 0){
+                getAudioTrack()
+            }
+            if (subtitleTracks.size == 0){
+                getSubtitleTrack()
+            }
         }
     }
 
     private fun getAudioTrack() {
-        Log.i("PlayerAudio", audioTracks.toString())
-
-
         player?.apply {
             if (currentTrackGroups.length > 0) {
-                audioTracks.clear()
                 for (i in 0 until currentTrackGroups.length) {
                     val format = player!!.currentTrackGroups[i].getFormat(0).sampleMimeType
                     val lang = player!!.currentTrackGroups[i].getFormat(0).language
@@ -205,6 +228,33 @@ class PlayerActivity : AppCompatActivity() {
                 .setMaxVideoSizeSd()
                 .setForceHighestSupportedBitrate(true)
                 .setPreferredAudioLanguage(audioTracks[i])
+        )
+    }
+
+    private fun getSubtitleTrack() {
+        player?.apply {
+            if (currentTrackGroups.length > 0) {
+                for (i in 0 until currentTrackGroups.length) {
+                    val format = player!!.currentTrackGroups[i].getFormat(0).sampleMimeType
+                    val lang = player!!.currentTrackGroups[i].getFormat(0).language
+                    val id = player!!.currentTrackGroups[i].getFormat(0).id
+                    if (format!!.contains("text") && id != null && lang != null) {
+                        Log.i("Subtitle Tracks",format.toString())
+                        Log.i("Subtitle Lang",lang)
+                        subtitleTracks.add(lang)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setSubtitleTrack(i:Int){
+        trackSelector.setParameters(
+            trackSelector
+                .buildUponParameters()
+                .setMaxVideoSizeSd()
+                .setForceHighestSupportedBitrate(true)
+                .setPreferredTextLanguage(subtitleTracks[i])
         )
     }
 }
