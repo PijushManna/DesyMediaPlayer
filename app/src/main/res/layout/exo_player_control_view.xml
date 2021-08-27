@@ -24,6 +24,19 @@
         android:contentDescription="@string/exo_controls_seek_bar_description"
         tools:ignore="SpeakableTextPresentCheck" />
 
+    <ImageButton
+        android:id="@+id/ib_change_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="@android:color/transparent"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/exo_ic_audiotrack"
+        tools:ignore="SpeakableTextPresentCheck" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
